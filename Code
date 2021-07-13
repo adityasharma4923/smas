@@ -1,0 +1,71 @@
+import pyttsx3
+import datetime
+import speech_recognition as sr
+import wikipedia
+import webbrowser
+import os
+import pyaudio
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[4].id)
+print("voices[4].id")
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+def wishme ():
+    hour = int(datetime.datetime.now().hour)
+    if hour>=0 and hour<12:
+        speak("Good morning Boss")
+    elif hour>=12 and hour<15:
+        speak ("Good afternoon Boss")
+    elif hour>=15 and hour<19:
+        speak ("Good evening Boss") 
+    else:
+        speak ("Good night Boss")
+    
+    speak("I am Smas, whats my work Boss")
+
+def takeCommand ():
+# It takes microphone input from the user and returns string output
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        speak("yes boss?")
+        r.pause_threshold = 1
+    audio = r.listen(source=sr.Microphone)
+
+    try:
+        print("ok boss")
+        query = r.recognize_google(audio, language= 'en-au')
+        print(f"boss said: {query}\n")
+    except Exception as e:
+        print(e)
+        print("Please say that again boss")
+        return "None"
+    return query
+
+if __name__ == "__main__":
+    wishme()
+    while True:
+        query = takeCommand().lower()
+        # logic for executing tasks based on query
+        if 'wikipedia' in query:
+            speak("Searching wikipedia Boss")
+            query = query.replace("wikipedia")
+            results = wikipedia.summary(query, sentences=5)
+            speak("According to wikipedia as you said boss")
+            speak(results)
+            print(results)
+
+        elif 'open youtube' in query:
+            webbrowser.open("yotube.com")
+
+        elif 'the time' in query:
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            speak("The time now is {strTime}")
+
+        elif 'open chrome' in query:
+                codePath = "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Chrome"
+                os.startfile(codePath)
